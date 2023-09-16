@@ -17,11 +17,11 @@ public class frmPrincipal extends javax.swing.JFrame {
     public void setDados(Dados msDados) {
         this.msDados = msDados;
     }
-    
+
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-    
+
     public void setPerfil(int perfil) {
         this.perfil = perfil;
     }
@@ -29,7 +29,7 @@ public class frmPrincipal extends javax.swing.JFrame {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    
+
     public frmPrincipal() {
         initComponents();
     }
@@ -172,11 +172,21 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnAjudaSobre.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         mnAjudaSobre.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/info.png"))); // NOI18N
         mnAjudaSobre.setText("Sobre");
+        mnAjudaSobre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnAjudaSobreActionPerformed(evt);
+            }
+        });
         mnAjuda.add(mnAjudaSobre);
 
         mnAjudaAjuda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         mnAjudaAjuda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/help.png"))); // NOI18N
         mnAjudaAjuda.setText("Ajuda");
+        mnAjudaAjuda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnAjudaAjudaActionPerformed(evt);
+            }
+        });
         mnAjuda.add(mnAjudaAjuda);
 
         jMenuBar1.add(mnAjuda);
@@ -198,7 +208,10 @@ public class frmPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnMovimentoNovaVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnMovimentoNovaVendaActionPerformed
-        // TODO add your handling code here:
+        frmFatura mFaturas = new frmFatura();
+        mFaturas.setDados(msDados);
+        dpnDesk.add(mFaturas);
+        mFaturas.show();
     }//GEN-LAST:event_mnMovimentoNovaVendaActionPerformed
 
     private void mnArquivoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoUsuarioActionPerformed
@@ -224,13 +237,13 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         ((BackGround) dpnDesk).setImage("/images/background.jpg");
-        
+
         if (perfil == 2) {
             mnArquivoCliente.setEnabled(false);
             mnArquivoProduto.setEnabled(false);
             mnArquivoUsuario.setEnabled(false);
             mnMovimentoRelatorioVenda.setEnabled(false);
-        } 
+        }
     }//GEN-LAST:event_formWindowOpened
 
     private void mnArquivoSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoSairActionPerformed
@@ -257,6 +270,16 @@ public class frmPrincipal extends javax.swing.JFrame {
         msSenha.setDados(msDados);
         msSenha.setVisible(rootPaneCheckingEnabled);
     }//GEN-LAST:event_mnArquivoTSenhaActionPerformed
+
+    private void mnAjudaSobreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnAjudaSobreActionPerformed
+        frmSobre mSobre = new frmSobre(this, rootPaneCheckingEnabled);
+        mSobre.setVisible(rootPaneCheckingEnabled);
+    }//GEN-LAST:event_mnAjudaSobreActionPerformed
+
+    private void mnAjudaAjudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnAjudaAjudaActionPerformed
+        frmSobre mAjuda = new frmSobre(this, rootPaneCheckingEnabled);
+        mAjuda.setVisible(rootPaneCheckingEnabled);
+    }//GEN-LAST:event_mnAjudaAjudaActionPerformed
 
     /**
      * @param args the command line arguments
