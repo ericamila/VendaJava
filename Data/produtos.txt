@@ -1,0 +1,5 @@
+1|Arroz|50|0|ff
+2|Feijão|40|1|Feijão preto
+3|Carne|60|2|amarelo
+4|asdf|43|2|asfda
+5|vela|15|1|velinha
