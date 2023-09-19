@@ -3,8 +3,12 @@ package formularios;
 import classes.Dados;
 import classes.Opcoes;
 import classes.Utilidades;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -202,45 +206,44 @@ public class frmFatura extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(45, 45, 45)
-                                .addComponent(txtData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(6, 6, 6)
-                                .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3))
-                                .addGap(26, 26, 26)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(cmbCliente, 0, 0, Short.MAX_VALUE)
-                                    .addComponent(cmbProduto, 0, 0, Short.MAX_VALUE))
-                                .addGap(8, 8, 8)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnPesquisarCliente)
-                            .addComponent(btnPesquisarProduto))
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jScrollPane1))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(370, 370, 370)
                         .addComponent(jLabel6)
                         .addGap(6, 6, 6)
                         .addComponent(txtTotalQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
-                        .addComponent(txtTotalValor, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtTotalValor, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(45, 45, 45)
+                                        .addComponent(txtData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addGap(6, 6, 6)
+                                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(3, 3, 3)
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel3))
+                                        .addGap(26, 26, 26)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(cmbCliente, 0, 0, Short.MAX_VALUE)
+                                            .addComponent(cmbProduto, 0, 0, Short.MAX_VALUE))
+                                        .addGap(8, 8, 8)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnPesquisarCliente)
+                                    .addComponent(btnPesquisarProduto))
+                                .addGap(24, 24, 24)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addGap(29, 29, 29))
         );
         layout.setVerticalGroup(
@@ -332,20 +335,83 @@ public class frmFatura extends javax.swing.JInternalFrame {
 //        
 //        int pos = msDados.posicaoProduto(pega);
         int pos = msDados.posicaoProduto(((Opcoes) cmbProduto.getSelectedItem()).getValor());
-                
+
         String registro[] = new String[5];
         registro[0] = msDados.getProdutos()[pos].getIdProduto();
         registro[1] = msDados.getProdutos()[pos].getDescricao();
-        registro[2] = ""+msDados.getProdutos()[pos].getPreco();
-        registro[3] = ""+qtd;
-        registro[4] = ""+(qtd*msDados.getProdutos()[pos].getPreco());
+        registro[2] = "" + msDados.getProdutos()[pos].getPreco();
+        registro[3] = "" + qtd;
+        registro[4] = "" + (qtd * msDados.getProdutos()[pos].getPreco());
         mTabela.addRow(registro);
 
         limpaCampos();
+        totais();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
+        if (cmbCliente.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(rootPane, "Selecione um cliente.");
+            cmbCliente.requestFocusInWindow();
+            return;
+        }
 
+        int totalQtd = Integer.parseInt(txtTotalQuantidade.getText());
+        if (totalQtd == 0) {
+            JOptionPane.showMessageDialog(rootPane, "Selecione os produtos para venda.");
+            txtTotalQuantidade.requestFocusInWindow();
+            return;
+        }
+        int resposta = JOptionPane.showConfirmDialog(rootPane, "Confirma a venda?");
+        if (resposta != 0) {
+            return;
+        }
+
+        int numFatura = msDados.getNumeroFatura() + 1;
+
+        FileWriter fw = null;
+        PrintWriter pw = null;
+        try {
+            fw = new FileWriter("Data/fatura.txt", true);
+            pw = new PrintWriter(fw);
+
+            String aux = "1|"
+                    + numFatura + "|"
+                    + ((Opcoes) cmbCliente.getSelectedItem()).getValor() + "|"
+                    + ((Opcoes) cmbCliente.getSelectedItem()).getDescricao() + "|"
+                    + txtData.getText();
+
+            pw.println(aux);
+            
+            int num = jTabelaDetalhes.getRowCount();
+            for (int i = 0; i < num; i++) {
+                aux = "2|"
+                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0))+"|"
+                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 1))+"|"
+                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 2))+"|"
+                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 3))+"|"
+                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 4));
+                
+                pw.println(aux);
+            }
+            
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        } finally {
+            try {
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        
+        JOptionPane.showMessageDialog(rootPane, "VENDA: "+numFatura+" REALIZADA COM SUCESSO!");
+        msDados.setNumeroFatura(numFatura);
+        cmbCliente.setSelectedIndex(0);
+        limparTabela();
+        totais();
+        cmbCliente.requestFocusInWindow();
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
@@ -353,8 +419,6 @@ public class frmFatura extends javax.swing.JInternalFrame {
         if (resposta != 0) {
             return;
         }
-
-
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnDeletarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeletarTodosActionPerformed
@@ -371,21 +435,19 @@ public class frmFatura extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         Opcoes opc = new Opcoes("selecione", "Selecione um cliente");
-        cmbCliente.addItem(opc.toString());
+        cmbCliente.addItem(opc);
         for (int i = 0; i < msDados.numeroCliente(); i++) {
             opc = new Opcoes(msDados.getClientes()[i].getIdCliente(),
                     msDados.getClientes()[i].getNome() + " "
                     + msDados.getClientes()[i].getSnome());
-            cmbCliente.addItem(opc.toString());
+            cmbCliente.addItem(opc);
         }
 
         opc = new Opcoes("selecione", "Selecione um produto");
-//        cmbProduto.addItem(opc.toString());
         cmbProduto.addItem(opc);
         for (int i = 0; i < msDados.numeroProduto(); i++) {
             opc = new Opcoes(msDados.getProdutos()[i].getIdProduto(),
                     msDados.getProdutos()[i].getDescricao());
-//            cmbProduto.addItem(opc.toString());
             cmbProduto.addItem(opc);
         }
 
@@ -400,11 +462,10 @@ public class frmFatura extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnDeletarTodos;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnNovo;
-    private javax.swing.JButton btnPesquisar;
     private javax.swing.JButton btnPesquisarCliente;
     private javax.swing.JButton btnPesquisarProduto;
     private javax.swing.JButton btnSalvar;
-    private javax.swing.JComboBox<String> cmbCliente;
+    private javax.swing.JComboBox<Opcoes> cmbCliente;
     private javax.swing.JComboBox<Opcoes> cmbProduto;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -425,14 +486,43 @@ public class frmFatura extends javax.swing.JInternalFrame {
         String titulos[] = {"ID Prod", "Descrição", "Preço", "Quantidade", "Valor"};
         String registro[] = new String[5];
         mTabela = new DefaultTableModel(null, titulos);
-
         jTabelaDetalhes.setModel(mTabela);
+
+        DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
+        dtcr.setHorizontalAlignment(SwingConstants.RIGHT);
+        jTabelaDetalhes.getColumnModel().getColumn(2).setCellRenderer(dtcr);
+        jTabelaDetalhes.getColumnModel().getColumn(3).setCellRenderer(dtcr);
+        jTabelaDetalhes.getColumnModel().getColumn(4).setCellRenderer(dtcr);
     }
 
     private void limpaCampos() {
         cmbProduto.setSelectedIndex(0);
         txtQuantidade.setText("");
         cmbProduto.requestFocusInWindow();
+    }
+
+    private void totais() {
+        int num = jTabelaDetalhes.getRowCount();
+        int somaQtd = 0, somaVal = 0;
+
+        for (int i = 0; i < num; i++) {
+            somaQtd += Utilidades.objectToInt(jTabelaDetalhes.getValueAt(i, 3));
+            somaVal += Utilidades.objectToInt(jTabelaDetalhes.getValueAt(i, 4));
+        }
+        txtTotalQuantidade.setText("" + somaQtd);
+        txtTotalValor.setText("" + somaVal);
+    }
+    
+    public void limparTabela(){
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) jTabelaDetalhes.getModel();
+            int linha = jTabelaDetalhes.getRowCount();
+            for (int i = 0; linha > i; i++) {
+                modelo.removeRow(0);               
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

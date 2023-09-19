@@ -28,9 +28,30 @@ public class Utilidades {
         }
         return x;
     }
-    
+
     public static String formatDate(Date data) {
         SimpleDateFormat formatotexto = new SimpleDateFormat("yyyy/MM/dd");
         return formatotexto.format(data);
     }
+
+    public static int objectToInt(Object Obj) {
+        return Integer.parseInt(objectToString(Obj));
+    }
+
+    public static double objectToDouble(Object Obj) {
+        return Double.parseDouble(objectToString(Obj));
+    }
+
+    public static boolean objectToBoolean(Object Obj) {
+        return Boolean.parseBoolean(objectToString(Obj));
+    }
+
+    public static String objectToString(Object Obj) {
+        String str = "";
+        if (Obj != null) {
+            str = Obj.toString();
+        }
+        return str;
+    }
+
 }

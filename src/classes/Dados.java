@@ -14,19 +14,28 @@ import java.util.Date;
 public class Dados {
 
     private int maxUsu = 50;
-    private Usuario msUsuarios[] = new Usuario[maxUsu];
-    private int conUsu = 0;
     private int maxPro = 100;
-    private Produto msProdutos[] = new Produto[maxPro];
-    private int conPro = 0;
     private int maxCli = 100;
+    private Usuario msUsuarios[] = new Usuario[maxUsu];
+    private Produto msProdutos[] = new Produto[maxPro];
     private Cliente msClientes[] = new Cliente[maxCli];
+    private int conUsu = 0;
+    private int conPro = 0;
     private int conCli = 0;
+    private int numFatura = 0;
 
     public Dados() {
         preencherUsuarios();
         preencherClientes();
         preencherProdutos();
+        preencherConfiguracao();
+    }
+    
+    public int getNumeroFatura() {
+        return numFatura;
+    }
+    public void setNumeroFatura(int numFatura){
+        this.numFatura = numFatura;
     }
 
     public int numeroUsuario() {
@@ -61,7 +70,7 @@ public class Dados {
         }
         return false;
     }
-    
+
     public int getPerfil(String usuario) {
         for (int i = 0; i < conUsu; i++) {
             if (msUsuarios[i].getIdUsuario().equals(usuario)) {
@@ -70,8 +79,8 @@ public class Dados {
         }
         return -1;
     }
-    
-    public void trocarSenha (String usuario, String senha) {
+
+    public void trocarSenha(String usuario, String senha) {
         for (int i = 0; i < conUsu; i++) {
             if (msUsuarios[i].getIdUsuario().equals(usuario)) {
                 msUsuarios[i].setSenha(senha);
@@ -190,6 +199,7 @@ public class Dados {
         salvarUsuarios();
         salvarClientes();
         salvarProdutos();
+        salvarConfiguracao();
     }
 
     private void salvarUsuarios() {
@@ -248,6 +258,29 @@ public class Dados {
             for (int i = 0; i < conPro; i++) {
                 pw.println(msProdutos[i].toString());
             }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        } finally {
+            try {
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void salvarConfiguracao() {
+        FileWriter fw = null;
+        PrintWriter pw = null;
+        try {
+            fw = new FileWriter("Data/configuracao.ini");
+            pw = new PrintWriter(fw);
+
+            pw.println("[Geral]");
+            pw.println("FaturaAtual="+numFatura);      
+
         } catch (Exception e1) {
             e1.printStackTrace();
         } finally {
@@ -342,13 +375,13 @@ public class Dados {
                 aux = linha.substring(0, pos);
                 preco = Integer.parseInt(aux);
                 linha = linha.substring(pos + 1);
-                
+
                 pos = linha.indexOf('|');
                 aux = linha.substring(0, pos);
                 imposto = Integer.parseInt(aux);
                 linha = linha.substring(pos + 1);
 
-                anotacao =linha;
+                anotacao = linha;
 
                 Produto mProduto = new Produto(idProduto, descricao, preco, imposto, anotacao);
                 msProdutos[conPro] = mProduto;
@@ -427,6 +460,36 @@ public class Dados {
                 Cliente mCliente = new Cliente(idCliente, idTipo, nome, snome, endereco, telefone, idCidade, nascimento, data);
                 msClientes[conCli] = mCliente;
                 conCli++;
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        } finally {
+            try {
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    private void preencherConfiguracao() {
+        File arquivo = null;
+        FileReader fr = null;
+        BufferedReader br = null;
+
+        try {
+            arquivo = new File("Data/Configuracao.ini");
+            fr = new FileReader(arquivo);
+            br = new BufferedReader(fr);
+
+            String linha;
+
+            while ((linha = br.readLine()) != null) {
+                if (linha.startsWith("FaturaAtual=")) {
+                    numFatura = new Integer(linha.substring(14));//VERIFICAR 14
+                }
             }
         } catch (Exception e1) {
             e1.printStackTrace();
