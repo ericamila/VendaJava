@@ -488,7 +488,7 @@ public class Dados {
 
             while ((linha = br.readLine()) != null) {
                 if (linha.startsWith("FaturaAtual=")) {
-                    numFatura = new Integer(linha.substring(14));//VERIFICAR 14
+                    numFatura = new Integer(linha.substring(12));//VERIFICAR 14
                 }
             }
         } catch (Exception e1) {

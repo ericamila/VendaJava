@@ -381,19 +381,19 @@ public class frmFatura extends javax.swing.JInternalFrame {
                     + txtData.getText();
 
             pw.println(aux);
-            
+
             int num = jTabelaDetalhes.getRowCount();
             for (int i = 0; i < num; i++) {
                 aux = "2|"
-                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0))+"|"
-                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 1))+"|"
-                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 2))+"|"
-                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 3))+"|"
-                + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 4));
-                
+                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0)) + "|"
+                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 1)) + "|"
+                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 2)) + "|"
+                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 3)) + "|"
+                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 4));
+
                 pw.println(aux);
             }
-            
+
         } catch (Exception e1) {
             e1.printStackTrace();
         } finally {
@@ -405,8 +405,8 @@ public class frmFatura extends javax.swing.JInternalFrame {
                 e2.printStackTrace();
             }
         }
-        
-        JOptionPane.showMessageDialog(rootPane, "VENDA: "+numFatura+" REALIZADA COM SUCESSO!");
+
+        JOptionPane.showMessageDialog(rootPane, "VENDA: " + numFatura + " REALIZADA COM SUCESSO!");
         msDados.setNumeroFatura(numFatura);
         cmbCliente.setSelectedIndex(0);
         limparTabela();
@@ -415,22 +415,69 @@ public class frmFatura extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        int resposta = JOptionPane.showConfirmDialog(rootPane, "Deseja realmente deletar este cadastro?");
-        if (resposta != 0) {
+        if (cmbProduto.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(rootPane, "Selecione um produto.");
+            cmbProduto.requestFocusInWindow();
             return;
         }
+
+        try {
+            DefaultTableModel modelo = (DefaultTableModel) jTabelaDetalhes.getModel();
+            int linha = jTabelaDetalhes.getRowCount();
+            for (int i = 0; linha > i; i++) {
+                String idTabela = Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0));
+                String idCombo = ((Opcoes) cmbProduto.getSelectedItem()).getValor();
+                if (idTabela.equals(idCombo)) {
+                    modelo.removeRow(i);
+                    totais();
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnDeletarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeletarTodosActionPerformed
-
+        int resposta = JOptionPane.showConfirmDialog(rootPane, "Deseja realmente deletar esta venda?");
+        if (resposta != 0) {
+            return;
+        }
+        limparTabela();
+        totais();
     }//GEN-LAST:event_btnDeletarTodosActionPerformed
 
     private void btnPesquisarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarClienteActionPerformed
-
+        frmPesqCliente mPesqCliente = new frmPesqCliente(null, closable);
+        mPesqCliente.setDados(msDados);
+        mPesqCliente.setVisible(true);
+        String rta = mPesqCliente.getResposta();
+        if (rta.equals("")) {
+            return;
+        }
+        for (int i = 0; i < cmbCliente.getItemCount(); i++) {
+            if (((Opcoes) cmbCliente.getItemAt(i)).getValor().equals(rta)) {
+                cmbCliente.setSelectedIndex(i);
+                return;
+            }
+        }
     }//GEN-LAST:event_btnPesquisarClienteActionPerformed
 
     private void btnPesquisarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarProdutoActionPerformed
-
+        frmPesqProduto mPesqProduto = new frmPesqProduto(null, closable);
+        mPesqProduto.setDados(msDados);
+        mPesqProduto.setVisible(true);
+        String rta = mPesqProduto.getResposta();
+        if (rta.equals("")) {
+            return;
+        }
+        for (int i = 0; i < cmbProduto.getItemCount(); i++) {
+            if (((Opcoes) cmbProduto.getItemAt(i)).getValor().equals(rta)) {
+                cmbProduto.setSelectedIndex(i);
+                return;
+            }
+        }
     }//GEN-LAST:event_btnPesquisarProdutoActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
@@ -512,13 +559,13 @@ public class frmFatura extends javax.swing.JInternalFrame {
         txtTotalQuantidade.setText("" + somaQtd);
         txtTotalValor.setText("" + somaVal);
     }
-    
-    public void limparTabela(){
+
+    public void limparTabela() {
         try {
             DefaultTableModel modelo = (DefaultTableModel) jTabelaDetalhes.getModel();
             int linha = jTabelaDetalhes.getRowCount();
             for (int i = 0; linha > i; i++) {
-                modelo.removeRow(0);               
+                modelo.removeRow(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
