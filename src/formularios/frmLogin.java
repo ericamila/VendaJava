@@ -1,6 +1,7 @@
 package formularios;
 
 import classes.Dados;
+import classes.Dados_db;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -12,6 +13,11 @@ import javax.swing.JOptionPane;
 public class frmLogin extends javax.swing.JFrame {
 
     private Dados msDados;
+    private Dados_db msDados_db;
+    
+    public void setDados_db(Dados_db msDados_db){
+        this.msDados_db = msDados_db;
+    }
     
     public void setDados(Dados msDados){
         this.msDados = msDados;
@@ -140,7 +146,7 @@ public class frmLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtSenhaKeyPressed
 
     private void logar(){
-        if (!msDados.validarUsuario(txtUsuario.getText(), new String(txtSenha.getPassword()))) {
+        if (!msDados_db.validarUsuario(txtUsuario.getText(), new String(txtSenha.getPassword()))) {
             JOptionPane.showMessageDialog(rootPane, "Usuário e/ou senha incorretos.");
             txtUsuario.setText("");
             txtSenha.setText("");
@@ -150,7 +156,8 @@ public class frmLogin extends javax.swing.JFrame {
         frmPrincipal mPrincipal = new frmPrincipal();
         this.setVisible(false);
         mPrincipal.setDados(msDados);
-        mPrincipal.setPerfil(msDados.getPerfil(txtUsuario.getText()));
+        mPrincipal.setDados_db(msDados_db);
+        mPrincipal.setPerfil(msDados_db.getPerfil(txtUsuario.getText()));
         mPrincipal.setSenha(new String(txtSenha.getPassword()));
         mPrincipal.setUsuario(txtUsuario.getText());
         mPrincipal.setExtendedState(JFrame.MAXIMIZED_BOTH);

@@ -1,6 +1,7 @@
 package formularios;
 
 import classes.Dados;
+import classes.Dados_db;
 import classes.Opcoes;
 import classes.Utilidades;
 import java.io.FileWriter;
@@ -19,6 +20,12 @@ public class frmFatura extends javax.swing.JInternalFrame {
 
     private Dados msDados;
     private DefaultTableModel mTabela;
+    
+    private Dados_db msDados_db;
+
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
+    }
 
     public void setDados(Dados msDados) {
         this.msDados = msDados;

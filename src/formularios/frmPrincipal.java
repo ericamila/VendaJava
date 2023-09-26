@@ -2,6 +2,7 @@ package formularios;
 
 import classes.BackGround;
 import classes.Dados;
+import classes.Dados_db;
 
 /**
  *
@@ -13,10 +14,18 @@ public class frmPrincipal extends javax.swing.JFrame {
     private String senha;
     private String usuario;
     private Dados msDados;
+//    private Object childSize;
+//    private Object parentSize;
+    
+    private Dados_db msDados_db;
 
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
+    }
     public void setDados(Dados msDados) {
         this.msDados = msDados;
     }
+   
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
@@ -216,6 +225,7 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     private void mnArquivoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoUsuarioActionPerformed
         frmUsuario mUsuarios = new frmUsuario();
+        mUsuarios.setDados_db(msDados_db);
         mUsuarios.setDados(msDados);
         dpnDesk.add(mUsuarios);
         mUsuarios.show();

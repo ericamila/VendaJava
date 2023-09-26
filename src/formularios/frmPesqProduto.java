@@ -1,6 +1,7 @@
 package formularios;
 
 import classes.Dados;
+import classes.Dados_db;
 import classes.Utilidades;
 import javax.swing.table.DefaultTableModel;
 
@@ -14,6 +15,11 @@ public class frmPesqProduto extends javax.swing.JDialog {
     private DefaultTableModel mTabela;
     private String resposta = "";
 
+    private Dados_db msDados_db;
+
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
+    }
     public void setDados(Dados msDados) {
         this.msDados = msDados;
     }

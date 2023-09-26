@@ -1,6 +1,7 @@
 package formularios;
 
 import classes.Dados;
+import classes.Dados_db;
 import classes.Produto;
 import classes.Utilidades;
 import javax.swing.JOptionPane;
@@ -12,6 +13,11 @@ public class frmProdutos extends javax.swing.JInternalFrame {
     private int proAtual = 0;
     private boolean novo = false;
     private DefaultTableModel mTabela;
+    private Dados_db msDados_db;
+
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
+    }
 
     public void setDados(Dados msDados) {
         this.msDados = msDados;

@@ -1,6 +1,7 @@
 package formularios;
 
 import classes.Dados;
+import classes.Dados_db;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
@@ -13,6 +14,11 @@ public class frmTrocarSenha extends javax.swing.JDialog {
     private String senha;
     private String usuario;
      private Dados msDados;
+     private Dados_db msDados_db;
+
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
+    }
 
     public void setDados(Dados msDados) {
         this.msDados = msDados;
