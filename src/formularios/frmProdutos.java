@@ -1,15 +1,19 @@
 package formularios;
 
-import classes.Dados;
 import classes.Dados_db;
 import classes.Produto;
 import classes.Utilidades;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class frmProdutos extends javax.swing.JInternalFrame {
 
-    private Dados msDados;
     private int proAtual = 0;
     private boolean novo = false;
     private DefaultTableModel mTabela;
@@ -17,10 +21,6 @@ public class frmProdutos extends javax.swing.JInternalFrame {
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
-    }
-
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
     }
 
     public frmProdutos() {
@@ -388,15 +388,14 @@ public class frmProdutos extends javax.swing.JInternalFrame {
             return;
         }
 
-        int pos = msDados.posicaoProduto(txtIDProduto.getText());
         if (novo) {
-            if (pos != -1) {
+            if (msDados_db.existeProduto(txtIDProduto.getText())) {
                 JOptionPane.showMessageDialog(rootPane, "Produto já existe.");
                 txtIDProduto.requestFocusInWindow();
                 return;
             }
         } else {
-            if (pos == -1) {
+            if (!msDados_db.existeProduto(txtIDProduto.getText())) {
                 JOptionPane.showMessageDialog(rootPane, "Produto ainda não existe.");
                 txtIDProduto.requestFocusInWindow();
                 return;
@@ -406,9 +405,9 @@ public class frmProdutos extends javax.swing.JInternalFrame {
         Produto mProduto = new Produto(txtIDProduto.getText(), txtDescricao.getText(), preco, cmbImposto.getSelectedIndex(), txtAnotacao.getText());
         String msg;
         if (novo) {
-            msg = msDados.adicionarProduto(mProduto);
+            msg = msDados_db.adicionarProduto(mProduto);
         } else {
-            msg = msDados.editarProduto(mProduto, pos);
+            msg = msDados_db.editarProduto(mProduto);
         }
 
         JOptionPane.showMessageDialog(rootPane, msg);
@@ -425,6 +424,7 @@ public class frmProdutos extends javax.swing.JInternalFrame {
         btnSalvar.setEnabled(false);
         btnCancelar.setEnabled(false);
         desabilitaCampos();
+        limpaCampos();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
@@ -438,8 +438,8 @@ public class frmProdutos extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
-        mostrarRegisto();
         preencherTabela();
+        mostrarRegisto();
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void btnPrimeiroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrimeiroActionPerformed
@@ -448,13 +448,13 @@ public class frmProdutos extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnPrimeiroActionPerformed
 
     private void btnUltimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUltimoActionPerformed
-        proAtual = msDados.numeroProduto() - 1;
+        proAtual = msDados_db.numeroProduto() - 1;
         mostrarRegisto();
     }//GEN-LAST:event_btnUltimoActionPerformed
 
     private void btnProximoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProximoActionPerformed
         proAtual++;
-        if (proAtual == msDados.numeroProduto()) {
+        if (proAtual == msDados_db.numeroProduto()) {
             proAtual = 0;
         }
         mostrarRegisto();
@@ -463,7 +463,7 @@ public class frmProdutos extends javax.swing.JInternalFrame {
     private void btnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnteriorActionPerformed
         proAtual--;
         if (proAtual == -1) {
-            proAtual = msDados.numeroProduto() - 1;
+            proAtual = msDados_db.numeroProduto() - 1;
         }
         mostrarRegisto();
     }//GEN-LAST:event_btnAnteriorActionPerformed
@@ -474,11 +474,11 @@ public class frmProdutos extends javax.swing.JInternalFrame {
             return;
         }
         String msg;
-        msg = msDados.deletarProduto(proAtual);
+        msg = msDados_db.deletarProduto(txtIDProduto.getText());
         JOptionPane.showMessageDialog(rootPane, msg);
         proAtual = 0;
-        mostrarRegisto();
         preencherTabela();
+        mostrarRegisto();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
@@ -486,45 +486,72 @@ public class frmProdutos extends javax.swing.JInternalFrame {
         if (produto.equals("")) {
             return;
         }
-        int pos = msDados.posicaoProduto(produto);
-        if (pos == -1) {
+        if (!msDados_db.existeProduto(produto)) {
             JOptionPane.showMessageDialog(rootPane, "Produto não existe");
             return;
         }
-        proAtual = pos;
+        int num = jTabela.getRowCount();
+        for (int i = 0; i < num; i++) {
+            if (Utilidades.objectToString(jTabela.getValueAt(i, 0)).equals(produto)) {
+                proAtual = i;
+                break;
+            }
+        }
         mostrarRegisto();
 
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void mostrarRegisto() {
-        txtIDProduto.setText(msDados.getProdutos()[proAtual].getIdProduto());
-        txtDescricao.setText(msDados.getProdutos()[proAtual].getDescricao());
-        txtPreco.setText("" + msDados.getProdutos()[proAtual].getPreco());
-        txtAnotacao.setText(msDados.getProdutos()[proAtual].getAnotacao());
-        cmbImposto.setSelectedIndex(msDados.getProdutos()[proAtual].getImposto());
+        txtIDProduto.setText(Utilidades.objectToString(jTabela.getValueAt(proAtual, 0)));
+        txtDescricao.setText(Utilidades.objectToString(jTabela.getValueAt(proAtual, 1)));
+        txtPreco.setText(Utilidades.objectToString(jTabela.getValueAt(proAtual, 2)));
+        cmbImposto.setSelectedIndex(imposto(Utilidades.objectToString(jTabela.getValueAt(proAtual, 3))));
+        txtAnotacao.setText(Utilidades.objectToString(jTabela.getValueAt(proAtual, 4)));
     }
 
     private void preencherTabela() {
-        String titulos[] = {"ID Produto", "Descrição", "Preço", "Imposto", "Anotação"};
-        String registro[] = new String[5];
-        mTabela = new DefaultTableModel(null, titulos);
-        for (int i = 0; i < msDados.numeroProduto(); i++) {
-            registro[0] = msDados.getProdutos()[i].getIdProduto();
-            registro[1] = msDados.getProdutos()[i].getDescricao();
-            registro[2] = "" + msDados.getProdutos()[i].getPreco();
-            registro[3] = imposto(msDados.getProdutos()[i].getImposto());
-            registro[4] = msDados.getProdutos()[i].getAnotacao();
-            mTabela.addRow(registro);
+        try {
+            String titulos[] = {"ID Produto", "Descrição", "Preço", "Imposto", "Anotação"};
+            String registro[] = new String[5];
+            mTabela = new DefaultTableModel(null, titulos);
+            ResultSet rs = msDados_db.getProdutos();
+
+            while (rs.next()) {
+                registro[0] = rs.getString("idProduto");
+                registro[1] = rs.getString("descricao");
+                registro[2] = rs.getString("preco");
+                registro[3] = imposto(rs.getInt("idImposto"));
+                registro[4] = rs.getString("notas");
+                mTabela.addRow(registro);
+            }
+            jTabela.setModel(mTabela);
+            DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
+            dtcr.setHorizontalAlignment(SwingConstants.RIGHT);
+            jTabela.getColumnModel().getColumn(2).setCellRenderer(dtcr);
+        } catch (SQLException ex) {
+            Logger.getLogger(frmProdutos.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jTabela.setModel(mTabela);
     }
 
-    private String imposto(int idImposto) {
+    private String imposto(int idImposto) {//verificar
         return switch (idImposto) {
-            case 0 -> "0%";
-            case 1 -> "10%";
-            default -> "15%";
+            case 0 ->
+                "0%";
+            case 1 ->
+                "10%";
+            default ->
+                "15%";
         };
+    }
+
+    private Integer imposto(String imposto) {
+        if (imposto.equals("0%")) {
+            return 0;
+        } else if (imposto.equals("10%")) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

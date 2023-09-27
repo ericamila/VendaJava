@@ -30,6 +30,9 @@ public class Utilidades {
     }
 
     public static String formatDate(Date data) {
+        if (data == null){
+            data = new Date();
+        }
         SimpleDateFormat formatotexto = new SimpleDateFormat("yyyy/MM/dd");
         return formatotexto.format(data);
     }
@@ -54,4 +57,13 @@ public class Utilidades {
         return str;
     }
 
+    public static Date objectToDate(Object obj) {
+        SimpleDateFormat formatotexto = new SimpleDateFormat("yyyy/MM/dd");
+        Date aux = null;
+        try {
+            aux = formatotexto.parse(objectToString(obj));
+        } catch (ParseException e) {
+        }
+        return aux;
+    }
 }

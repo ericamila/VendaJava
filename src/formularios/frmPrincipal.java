@@ -12,21 +12,13 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     private int perfil;
     private String senha;
-    private String usuario;
-    private Dados msDados;
-//    private Object childSize;
-//    private Object parentSize;
-    
+    private String usuario;  
     private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
     }
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
-    }
    
-
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
@@ -218,7 +210,7 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     private void mnMovimentoNovaVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnMovimentoNovaVendaActionPerformed
         frmFatura mFaturas = new frmFatura();
-        mFaturas.setDados(msDados);
+        mFaturas.setDados_db(msDados_db);
         dpnDesk.add(mFaturas);
         mFaturas.show();
     }//GEN-LAST:event_mnMovimentoNovaVendaActionPerformed
@@ -226,21 +218,20 @@ public class frmPrincipal extends javax.swing.JFrame {
     private void mnArquivoUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoUsuarioActionPerformed
         frmUsuario mUsuarios = new frmUsuario();
         mUsuarios.setDados_db(msDados_db);
-        mUsuarios.setDados(msDados);
         dpnDesk.add(mUsuarios);
         mUsuarios.show();
     }//GEN-LAST:event_mnArquivoUsuarioActionPerformed
 
     private void mnArquivoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoProdutoActionPerformed
         frmProdutos msProdutos = new frmProdutos();
-        msProdutos.setDados(msDados);
+        msProdutos.setDados_db(msDados_db);
         dpnDesk.add(msProdutos);
         msProdutos.show();
     }//GEN-LAST:event_mnArquivoProdutoActionPerformed
 
     private void mnArquivoClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoClienteActionPerformed
         frmClientes msClientes = new frmClientes();
-        msClientes.setDados(msDados);
+        msClientes.setDados_db(msDados_db);
         dpnDesk.add(msClientes);
         msClientes.show();
     }//GEN-LAST:event_mnArquivoClienteActionPerformed

@@ -1,6 +1,5 @@
 package formularios;
 
-import classes.Dados;
 import classes.Dados_db;
 import classes.Usuario;
 import classes.Utilidades;
@@ -13,7 +12,6 @@ import java.util.logging.Logger;
 
 public class frmUsuario extends javax.swing.JInternalFrame {
 
-    private Dados msDados;
     private int usuAtual = 0;
     private boolean novo = false;
     private DefaultTableModel mTabela;
@@ -21,10 +19,6 @@ public class frmUsuario extends javax.swing.JInternalFrame {
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
-    }
-
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
     }
 
     public frmUsuario() {
@@ -466,13 +460,13 @@ public class frmUsuario extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnPrimeiroActionPerformed
 
     private void btnUltimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUltimoActionPerformed
-        usuAtual = msDados.numeroUsuario() - 1;
+        usuAtual = msDados_db.numeroUsuario() - 1;
         mostrarRegisto();
     }//GEN-LAST:event_btnUltimoActionPerformed
 
     private void btnProximoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProximoActionPerformed
         usuAtual++;
-        if (usuAtual == msDados.numeroUsuario()) {
+        if (usuAtual == msDados_db.numeroUsuario()) {
             usuAtual = 0;
         }
         mostrarRegisto();
@@ -481,7 +475,7 @@ public class frmUsuario extends javax.swing.JInternalFrame {
     private void btnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnteriorActionPerformed
         usuAtual--;
         if (usuAtual == -1) {
-            usuAtual = msDados.numeroUsuario() - 1;
+            usuAtual = msDados_db.numeroUsuario() - 1;
         }
         mostrarRegisto();
     }//GEN-LAST:event_btnAnteriorActionPerformed
@@ -495,8 +489,8 @@ public class frmUsuario extends javax.swing.JInternalFrame {
         msg = msDados_db.deletarUsuario(txtIDUsuario.getText());
         JOptionPane.showMessageDialog(rootPane, msg);
         usuAtual = 0;
-        mostrarRegisto();
         preencherTabela();
+        mostrarRegisto();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
@@ -504,12 +498,17 @@ public class frmUsuario extends javax.swing.JInternalFrame {
         if (usuario.equals("")) {
             return;
         }
-        int pos = msDados.posicaoUsuario(usuario);
-        if (pos == -1) {
+        if (!msDados_db.existeUsuario(usuario)) {
             JOptionPane.showMessageDialog(rootPane, "Usuário não existe");
             return;
         }
-        usuAtual = pos;
+        int num = jTabela.getRowCount();
+            for (int i = 0; i < num; i++) {
+                if (Utilidades.objectToString(jTabela.getValueAt(i, 0)).equals(usuario)) {
+                    usuAtual = i;
+                    break;
+                }
+            }
         mostrarRegisto();
 
     }//GEN-LAST:event_btnPesquisarActionPerformed

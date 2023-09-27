@@ -1,20 +1,25 @@
 package formularios;
 
-import classes.Dados;
+import classes.Dados_db;
 import classes.Cliente;
+import classes.Utilidades;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class frmClientes extends javax.swing.JInternalFrame {
 
-    private Dados msDados;
+    private Dados_db msDados_db;
     private int cliAtual = 0;
     private boolean novo = false;
     private DefaultTableModel mTabela;
 
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
+    public void setDados_db(Dados_db msDados_db) {
+        this.msDados_db = msDados_db;
     }
 
     public frmClientes() {
@@ -442,28 +447,27 @@ public class frmClientes extends javax.swing.JInternalFrame {
             return;
         }
 
-        int pos = msDados.posicaoCliente(txtIDCliente.getText());
         if (novo) {
-            if (pos != -1) {
+            if (msDados_db.existeCliente(txtIDCliente.getText())) {
                 JOptionPane.showMessageDialog(rootPane, "Cliente já existe.");
                 txtIDCliente.requestFocusInWindow();
                 return;
             }
         } else {
-            if (pos == -1) {
+            if (!msDados_db.existeCliente(txtIDCliente.getText())) {
                 JOptionPane.showMessageDialog(rootPane, "Cliente ainda não existe.");
                 txtIDCliente.requestFocusInWindow();
                 return;
             }
         }
 
-        Cliente mCliente = new Cliente(txtIDCliente.getText(), cmbIdentificacao.getSelectedIndex(), txtNome.getText(), txtSNome.getText(), 
-                txtEndereco.getText(), txtTelefone.getText(),cmbCidade.getSelectedIndex(), jDataNascimento.getDate(), jData.getDate());
+        Cliente mCliente = new Cliente(txtIDCliente.getText(), cmbIdentificacao.getSelectedIndex(), txtNome.getText(), txtSNome.getText(),
+                txtEndereco.getText(), txtTelefone.getText(), cmbCidade.getSelectedIndex(), jDataNascimento.getDate(), jData.getDate());
         String msg;
         if (novo) {
-            msg = msDados.adicionarCliente(mCliente);
+            msg = msDados_db.adicionarCliente(mCliente);
         } else {
-            msg = msDados.editarCliente(mCliente, pos);
+            msg = msDados_db.editarCliente(mCliente);
         }
 
         JOptionPane.showMessageDialog(rootPane, msg);
@@ -494,8 +498,8 @@ public class frmClientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
-        mostrarRegisto();
         preencherTabela();
+        mostrarRegisto();
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void btnPrimeiroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrimeiroActionPerformed
@@ -504,13 +508,13 @@ public class frmClientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnPrimeiroActionPerformed
 
     private void btnUltimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUltimoActionPerformed
-        cliAtual = msDados.numeroCliente() - 1;
+        cliAtual = msDados_db.numeroCliente() - 1;
         mostrarRegisto();
     }//GEN-LAST:event_btnUltimoActionPerformed
 
     private void btnProximoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProximoActionPerformed
         cliAtual++;
-        if (cliAtual == msDados.numeroCliente()) {
+        if (cliAtual == msDados_db.numeroCliente()) {
             cliAtual = 0;
         }
         mostrarRegisto();
@@ -519,7 +523,7 @@ public class frmClientes extends javax.swing.JInternalFrame {
     private void btnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnteriorActionPerformed
         cliAtual--;
         if (cliAtual == -1) {
-            cliAtual = msDados.numeroCliente() - 1;
+            cliAtual = msDados_db.numeroCliente() - 1;
         }
         mostrarRegisto();
     }//GEN-LAST:event_btnAnteriorActionPerformed
@@ -530,11 +534,11 @@ public class frmClientes extends javax.swing.JInternalFrame {
             return;
         }
         String msg;
-        msg = msDados.deletarCliente(cliAtual);
+        msg = msDados_db.deletarCliente(txtIDCliente.getText());
         JOptionPane.showMessageDialog(rootPane, msg);
         cliAtual = 0;
-        mostrarRegisto();
         preencherTabela();
+        mostrarRegisto();
     }//GEN-LAST:event_btnExcluirActionPerformed
 
     private void btnPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarActionPerformed
@@ -542,73 +546,163 @@ public class frmClientes extends javax.swing.JInternalFrame {
         if (cliente.equals("")) {
             return;
         }
-        int pos = msDados.posicaoCliente(cliente);
-        if (pos == -1) {
+        if (!msDados_db.existeCliente(cliente)) {
             JOptionPane.showMessageDialog(rootPane, "Cliente não existe");
             return;
         }
-        cliAtual = pos;
+        int num = jTabela.getRowCount();
+        for (int i = 0; i < num; i++) {
+            if (Utilidades.objectToString(jTabela.getValueAt(i, 0)).equals(cliente)) {
+                cliAtual = i;
+                break;
+            }
+        }
         mostrarRegisto();
 
     }//GEN-LAST:event_btnPesquisarActionPerformed
 
     private void mostrarRegisto() {
-        txtIDCliente.setText(msDados.getClientes()[cliAtual].getIdCliente());
-        txtNome.setText(msDados.getClientes()[cliAtual].getNome());
-        txtSNome.setText(msDados.getClientes()[cliAtual].getSnome());
-        txtEndereco.setText(msDados.getClientes()[cliAtual].getEndereco());
-        txtTelefone.setText(msDados.getClientes()[cliAtual].getTelefone());
-        jDataNascimento.setDate(msDados.getClientes()[cliAtual].getNascimento());
-        jData.setDate(msDados.getClientes()[cliAtual].getData());
-        cmbIdentificacao.setSelectedIndex(msDados.getClientes()[cliAtual].getIdTipo());
-        cmbCidade.setSelectedIndex(msDados.getClientes()[cliAtual].getIdTipo());
+        txtIDCliente.setText(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 0)));
+        cmbIdentificacao.setSelectedIndex(tipoID(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 1))));
+        txtNome.setText(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 2)));
+        txtSNome.setText(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 3)));
+        txtEndereco.setText(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 4)));
+        txtTelefone.setText(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 5)));
+        cmbCidade.setSelectedIndex(cidade(Utilidades.objectToString(jTabela.getValueAt(cliAtual, 6))));
+        jDataNascimento.setDate(Utilidades.objectToDate(jTabela.getValueAt(cliAtual, 7)));
+        jData.setDate(Utilidades.objectToDate(jTabela.getValueAt(cliAtual, 8)));
     }
 
     private void preencherTabela() {
-        String titulos[] = {"ID Cliente", "Tipo ID", "Nome", "Sobrenome","Endereço", "Telefone", "Cidade", "Data de Nasc.", "Data"};
-        String registro[] = new String[9];
-        mTabela = new DefaultTableModel(null, titulos);
-        for (int i = 0; i < msDados.numeroCliente(); i++) {
-            registro[0] = msDados.getClientes()[i].getIdCliente();
-            registro[1] = tipoID(msDados.getClientes()[i].getIdTipo());
-            registro[2] = msDados.getClientes()[i].getNome();
-            registro[3] = msDados.getClientes()[i].getSnome();
-            registro[4] = msDados.getClientes()[i].getEndereco();
-            registro[5] = msDados.getClientes()[i].getTelefone();
-            registro[6] = cidade(msDados.getClientes()[i].getIdCidade());
-            registro[7] = ""+msDados.getClientes()[i].getNascimento();
-            registro[8] = ""+msDados.getClientes()[i].getData();
-            mTabela.addRow(registro);
+        try {
+            String titulos[] = {"ID Cliente", "Tipo ID", "Nome", "Sobrenome", "Endereço", "Telefone", "Cidade", "Data de Nasc.", "Data"};
+            String registro[] = new String[9];
+            mTabela = new DefaultTableModel(null, titulos);
+            ResultSet rs = msDados_db.getClientes();
+
+            while (rs.next()) {
+                registro[0] = rs.getString("idCliente");
+                registro[1] = tipoID(rs.getInt("idTipo"));
+                registro[2] = rs.getString("nomes");
+                registro[3] = rs.getString("snome");
+                registro[4] = rs.getString("endereco");
+                registro[5] = rs.getString("telefone");
+                registro[6] = cidade(rs.getInt("idCidade"));
+                registro[7] = rs.getString("dataNascimento");
+                registro[8] = rs.getString("dataCadastro");
+                mTabela.addRow(registro);
+            }
+            jTabela.setModel(mTabela);
+        } catch (SQLException ex) {
+            Logger.getLogger(frmUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
-        jTabela.setModel(mTabela);
     }
 
     private String tipoID(int id) {
         return switch (id) {
-            case 1 -> "CNH";
-            case 2 -> "Identidade";
-            case 3 -> "Passaporte";
-            default -> "Não definido";
+            case 1 ->
+                "CNH";
+            case 2 ->
+                "Identidade";
+            case 3 ->
+                "Passaporte";
+            case 4 ->
+                "CPF";
+            case 5 ->
+                "Carteira Internacional";
+            case 6 ->
+                "Outros";
+            default ->
+                "Não definido";
         };
     }
+
+    private int tipoID(String tipo) {
+        return switch (tipo) {
+            case "CNH" ->
+                1;
+            case "Identidade" ->
+                2;
+            case "Passaporte" ->
+                3;
+            case "CPF" ->
+                4;
+            case "Carteira Internacional" ->
+                5;
+            default ->
+                6;
+        };
+    }
+
     private String cidade(int id) {
         return switch (id) {
-            case 1 -> "Boa Vista";
-            case 2 -> "Rorainópolis";
-            case 3 -> "Caracaraí";
-            case 4 -> "Alto Alegre";
-            case 5 -> "Mucajaí";
-            case 6 -> "Cantá";
-            case 7 -> "Bonfim";
-            case 8 -> "Pacaraima";
-            case 9 -> "Amajari";
-            case 10 -> "Normandia";
-            case 11 -> "Iracema";
-            case 12 -> "Uiramutã";
-            case 13 -> "Caroebe";
-            case 14 -> "São João da Baliza";
-            case 15 -> "São Luís do Anauá";
-            default -> "Não definido";
+            case 1 ->
+                "Boa Vista";
+            case 2 ->
+                "Rorainópolis";
+            case 3 ->
+                "Caracaraí";
+            case 4 ->
+                "Alto Alegre";
+            case 5 ->
+                "Mucajaí";
+            case 6 ->
+                "Cantá";
+            case 7 ->
+                "Bonfim";
+            case 8 ->
+                "Pacaraima";
+            case 9 ->
+                "Amajari";
+            case 10 ->
+                "Normandia";
+            case 11 ->
+                "Iracema";
+            case 12 ->
+                "Uiramutã";
+            case 13 ->
+                "Caroebe";
+            case 14 ->
+                "São João da Baliza";
+            case 15 ->
+                "São Luís do Anauá";
+            default ->
+                "Não definido";
+        };
+    }
+
+    private int cidade(String nome) {
+        return switch (nome) {
+            case "Boa Vista" ->
+                1;
+            case "Rorainópolis" ->
+                2;
+            case "Caracaraí" ->
+                3;
+            case "Alto Alegre" ->
+                4;
+            case "Mucajaí" ->
+                5;
+            case "Cantá" ->
+                6;
+            case "Bonfim" ->
+                7;
+            case "Pacaraima" ->
+                8;
+            case "Amajari" ->
+                9;
+            case "Normandia" ->
+                10;
+            case "Iracema" ->
+                11;
+            case "Uiramutã" ->
+                12;
+            case "Caroebe" ->
+                13;
+            case "São João da Baliza" ->
+                14;
+            default ->
+                15;
         };
     }
 

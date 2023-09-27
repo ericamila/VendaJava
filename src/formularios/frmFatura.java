@@ -1,6 +1,5 @@
 package formularios;
 
-import classes.Dados;
 import classes.Dados_db;
 import classes.Opcoes;
 import classes.Utilidades;
@@ -11,6 +10,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,17 +21,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class frmFatura extends javax.swing.JInternalFrame {
 
-    private Dados msDados;
     private DefaultTableModel mTabela;
-    
-    private Dados_db msDados_db;
+        private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
-    }
-
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
     }
 
     public frmFatura() {
@@ -488,27 +485,35 @@ public class frmFatura extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnPesquisarProdutoActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
-        Opcoes opc = new Opcoes("selecione", "Selecione um cliente");
-        cmbCliente.addItem(opc);
-        for (int i = 0; i < msDados.numeroCliente(); i++) {
-            opc = new Opcoes(msDados.getClientes()[i].getIdCliente(),
-                    msDados.getClientes()[i].getNome() + " "
-                    + msDados.getClientes()[i].getSnome());
+        try {
+            Opcoes opc = new Opcoes("selecione", "Selecione um cliente");
             cmbCliente.addItem(opc);
-        }
-
-        opc = new Opcoes("selecione", "Selecione um produto");
-        cmbProduto.addItem(opc);
-        for (int i = 0; i < msDados.numeroProduto(); i++) {
-            opc = new Opcoes(msDados.getProdutos()[i].getIdProduto(),
-                    msDados.getProdutos()[i].getDescricao());
+            ResultSet rsCli = msDados_db.getClientes();
+            while(rsCli.next()) {
+                opc = new Opcoes(
+                rsCli.getString("idCliente"),
+                rsCli.getString("nomes")+" "+
+                rsCli.getString("snome"));
+                cmbCliente.addItem(opc);
+            }
+            
+            opc = new Opcoes("selecione", "Selecione um produto");
             cmbProduto.addItem(opc);
+           ResultSet rsPro = msDados_db.getProdutos();
+            while(rsPro.next()) {
+                opc = new Opcoes(
+                rsPro.getString("idProduto"),
+                rsPro.getString("descricao"));
+                cmbProduto.addItem(opc);
+            }
+            
+            txtData.setText(Utilidades.formatDate(new Date()));
+            txtTotalQuantidade.setText("0");
+            txtTotalValor.setText("0.00");
+            preencherTabela();
+        } catch (SQLException ex) {
+            Logger.getLogger(frmFatura.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        txtData.setText(Utilidades.formatDate(new Date()));
-        txtTotalQuantidade.setText("0");
-        txtTotalValor.setText("0.00");
-        preencherTabela();
     }//GEN-LAST:event_formInternalFrameOpened
 
 
