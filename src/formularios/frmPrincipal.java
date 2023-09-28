@@ -12,13 +12,13 @@ public class frmPrincipal extends javax.swing.JFrame {
 
     private int perfil;
     private String senha;
-    private String usuario;  
+    private String usuario;
     private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
     }
-   
+
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
@@ -163,6 +163,11 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnMovimentoRelatorioVenda.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         mnMovimentoRelatorioVenda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/relatorio.png"))); // NOI18N
         mnMovimentoRelatorioVenda.setText("Relatório Venda");
+        mnMovimentoRelatorioVenda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnMovimentoRelatorioVendaActionPerformed(evt);
+            }
+        });
         mnMovimento.add(mnMovimentoRelatorioVenda);
 
         jMenuBar1.add(mnMovimento);
@@ -248,19 +253,19 @@ public class frmPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void mnArquivoSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoSairActionPerformed
-        msDados.salvarTodo();
+        //msDados.salvarTodo(); aPAGAR
         System.exit(0);
     }//GEN-LAST:event_mnArquivoSairActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        msDados.salvarTodo();
+        // msDados.salvarTodo();
         System.exit(0);
     }//GEN-LAST:event_formWindowClosing
 
     private void mnArquivoTUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnArquivoTUsuarioActionPerformed
         this.setVisible(false);
         frmLogin mLogin = new frmLogin();
-        mLogin.setDados(msDados);
+        mLogin.setDados_db(msDados_db);
         mLogin.setVisible(true);
     }//GEN-LAST:event_mnArquivoTUsuarioActionPerformed
 
@@ -268,7 +273,7 @@ public class frmPrincipal extends javax.swing.JFrame {
         frmTrocarSenha msSenha = new frmTrocarSenha(this, rootPaneCheckingEnabled);
         msSenha.setSenha(senha);
         msSenha.setUsuario(usuario);
-        msSenha.setDados(msDados);
+        msSenha.setDados_db(msDados_db);
         msSenha.setVisible(rootPaneCheckingEnabled);
     }//GEN-LAST:event_mnArquivoTSenhaActionPerformed
 
@@ -281,6 +286,13 @@ public class frmPrincipal extends javax.swing.JFrame {
         frmSobre mAjuda = new frmSobre(this, rootPaneCheckingEnabled);
         mAjuda.setVisible(rootPaneCheckingEnabled);
     }//GEN-LAST:event_mnAjudaAjudaActionPerformed
+
+    private void mnMovimentoRelatorioVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnMovimentoRelatorioVendaActionPerformed
+        frmRelatoriosVendas mrelatorio = new frmRelatoriosVendas();
+        mrelatorio.setDados_db(msDados_db);
+        dpnDesk.add(mrelatorio);
+        mrelatorio.show();
+    }//GEN-LAST:event_mnMovimentoRelatorioVendaActionPerformed
 
     /**
      * @param args the command line arguments

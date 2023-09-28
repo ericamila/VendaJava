@@ -12,15 +12,10 @@ import javax.swing.JOptionPane;
  */
 public class frmLogin extends javax.swing.JFrame {
 
-    private Dados msDados;
     private Dados_db msDados_db;
     
     public void setDados_db(Dados_db msDados_db){
         this.msDados_db = msDados_db;
-    }
-    
-    public void setDados(Dados msDados){
-        this.msDados = msDados;
     }
     
     public frmLogin() {
@@ -155,7 +150,6 @@ public class frmLogin extends javax.swing.JFrame {
         }
         frmPrincipal mPrincipal = new frmPrincipal();
         this.setVisible(false);
-        mPrincipal.setDados(msDados);
         mPrincipal.setDados_db(msDados_db);
         mPrincipal.setPerfil(msDados_db.getPerfil(txtUsuario.getText()));
         mPrincipal.setSenha(new String(txtSenha.getPassword()));

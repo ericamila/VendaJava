@@ -1,6 +1,5 @@
 package formularios;
 
-import classes.Dados;
 import classes.Dados_db;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
@@ -13,15 +12,10 @@ public class frmTrocarSenha extends javax.swing.JDialog {
 
     private String senha;
     private String usuario;
-     private Dados msDados;
-     private Dados_db msDados_db;
+    private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
-    }
-
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
     }
 
     public void setUsuario(String usuario) {
@@ -70,7 +64,7 @@ public class frmTrocarSenha extends javax.swing.JDialog {
         btnEntrar.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         btnEntrar.setForeground(new java.awt.Color(0, 51, 153));
         btnEntrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/ball_green_icon.png"))); // NOI18N
-        btnEntrar.setText("Entrar");
+        btnEntrar.setText("Trocar");
         btnEntrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEntrarActionPerformed(evt);
@@ -158,37 +152,37 @@ public class frmTrocarSenha extends javax.swing.JDialog {
         String atual = new String(txtAtual.getPassword());
         String nova = new String(txtNova.getPassword());
         String confirmacao = new String(txtConfirmacao.getPassword());
-        
+
         if (atual.equals("")) {
             JOptionPane.showMessageDialog(rootPane, "Insira a senha atual.");
             txtAtual.requestFocusInWindow();
             return;
-        } 
+        }
         if (nova.equals("")) {
             JOptionPane.showMessageDialog(rootPane, "Insira a senha nova.");
             txtNova.requestFocusInWindow();
             return;
-        } 
+        }
         if (confirmacao.equals("")) {
             JOptionPane.showMessageDialog(rootPane, "Insira a confirmação da senha.");
             txtConfirmacao.requestFocusInWindow();
             return;
-        } 
+        }
         if (!atual.equals(senha)) {
             JOptionPane.showMessageDialog(rootPane, "Senha atual incorreta.");
             txtAtual.setText("");
             txtAtual.requestFocusInWindow();
             return;
-        } 
+        }
         if (!nova.equals(confirmacao)) {
             JOptionPane.showMessageDialog(rootPane, "A senha nova e de confirmação não são iguais.");
             txtNova.setText("");
             txtConfirmacao.setText("");
             txtNova.requestFocusInWindow();
             return;
-        } 
-        
-        msDados.trocarSenha(usuario, nova);
+        }
+
+        msDados_db.trocarSenha(usuario, nova);
         JOptionPane.showMessageDialog(rootPane, "Senha alterada.");
         this.dispose();
     }//GEN-LAST:event_btnEntrarActionPerformed

@@ -2,6 +2,7 @@ package formularios;
 
 import classes.Dados_db;
 import classes.Opcoes;
+import classes.Produto;
 import classes.Utilidades;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 public class frmFatura extends javax.swing.JInternalFrame {
 
     private DefaultTableModel mTabela;
-        private Dados_db msDados_db;
+    private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
@@ -331,21 +332,14 @@ public class frmFatura extends javax.swing.JInternalFrame {
             return;
         }
 
-//        String pega="";
-//        for (int i = 0; i < msDados.numeroProduto(); i++) {
-//            if (cmbProduto.getSelectedItem().equals(msDados.getProdutos()[i].getDescricao()))
-//            pega = msDados.getProdutos()[i].getIdProduto();
-//        }
-//        
-//        int pos = msDados.posicaoProduto(pega);
-        int pos = msDados.posicaoProduto(((Opcoes) cmbProduto.getSelectedItem()).getValor());
+        Produto mProduto = msDados_db.getProduto(((Opcoes) cmbProduto.getSelectedItem()).getValor());
 
         String registro[] = new String[5];
-        registro[0] = msDados.getProdutos()[pos].getIdProduto();
-        registro[1] = msDados.getProdutos()[pos].getDescricao();
-        registro[2] = "" + msDados.getProdutos()[pos].getPreco();
+        registro[0] = mProduto.getIdProduto();
+        registro[1] = mProduto.getDescricao();
+        registro[2] = "" + mProduto.getPreco();
         registro[3] = "" + qtd;
-        registro[4] = "" + (qtd * msDados.getProdutos()[pos].getPreco());
+        registro[4] = "" + (qtd * mProduto.getPreco());
         mTabela.addRow(registro);
 
         limpaCampos();
@@ -370,48 +364,25 @@ public class frmFatura extends javax.swing.JInternalFrame {
             return;
         }
 
-        int numFatura = msDados.getNumeroFatura() + 1;
+        int numFatura = msDados_db.getNumeroFatura();
+        msDados_db.adicionarFatura(numFatura,
+                ((Opcoes) cmbCliente.getSelectedItem()).getValor(),
+                new Date());
 
-        FileWriter fw = null;
-        PrintWriter pw = null;
-        try {
-            fw = new FileWriter("Data/fatura.txt", true);
-            pw = new PrintWriter(fw);
+        int num = jTabelaDetalhes.getRowCount();
 
-            String aux = "1|"
-                    + numFatura + "|"
-                    + ((Opcoes) cmbCliente.getSelectedItem()).getValor() + "|"
-                    + ((Opcoes) cmbCliente.getSelectedItem()).getDescricao() + "|"
-                    + txtData.getText();
+        for (int i = 0; i < num; i++) {
+            msDados_db.adicionarDetalheFatura(
+                    numFatura,
+                    i,
+                    Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0)),
+                    Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 1)),
+                    Utilidades.objectToInt(jTabelaDetalhes.getValueAt(i, 2)),
+                    Utilidades.objectToInt(jTabelaDetalhes.getValueAt(i, 3)));
 
-            pw.println(aux);
-
-            int num = jTabelaDetalhes.getRowCount();
-            for (int i = 0; i < num; i++) {
-                aux = "2|"
-                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 0)) + "|"
-                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 1)) + "|"
-                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 2)) + "|"
-                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 3)) + "|"
-                        + Utilidades.objectToString(jTabelaDetalhes.getValueAt(i, 4));
-
-                pw.println(aux);
-            }
-
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        } finally {
-            try {
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
         }
 
-        JOptionPane.showMessageDialog(rootPane, "VENDA: " + numFatura + " REALIZADA COM SUCESSO!");
-        msDados.setNumeroFatura(numFatura);
+        JOptionPane.showMessageDialog(rootPane,"VENDA: " + numFatura + " REALIZADA COM SUCESSO!");
         cmbCliente.setSelectedIndex(0);
         limparTabela();
         totais();
@@ -454,7 +425,7 @@ public class frmFatura extends javax.swing.JInternalFrame {
 
     private void btnPesquisarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarClienteActionPerformed
         frmPesqCliente mPesqCliente = new frmPesqCliente(null, closable);
-        mPesqCliente.setDados(msDados);
+        mPesqCliente.setDados_db(msDados_db);
         mPesqCliente.setVisible(true);
         String rta = mPesqCliente.getResposta();
         if (rta.equals("")) {
@@ -470,7 +441,7 @@ public class frmFatura extends javax.swing.JInternalFrame {
 
     private void btnPesquisarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarProdutoActionPerformed
         frmPesqProduto mPesqProduto = new frmPesqProduto(null, closable);
-        mPesqProduto.setDados(msDados);
+        mPesqProduto.setDados_db(msDados_db);
         mPesqProduto.setVisible(true);
         String rta = mPesqProduto.getResposta();
         if (rta.equals("")) {
@@ -489,30 +460,32 @@ public class frmFatura extends javax.swing.JInternalFrame {
             Opcoes opc = new Opcoes("selecione", "Selecione um cliente");
             cmbCliente.addItem(opc);
             ResultSet rsCli = msDados_db.getClientes();
-            while(rsCli.next()) {
+            while (rsCli.next()) {
                 opc = new Opcoes(
-                rsCli.getString("idCliente"),
-                rsCli.getString("nomes")+" "+
-                rsCli.getString("snome"));
+                        rsCli.getString("idCliente"),
+                        rsCli.getString("nomes") + " "
+                        + rsCli.getString("snome"));
                 cmbCliente.addItem(opc);
             }
-            
+
             opc = new Opcoes("selecione", "Selecione um produto");
             cmbProduto.addItem(opc);
-           ResultSet rsPro = msDados_db.getProdutos();
-            while(rsPro.next()) {
+            ResultSet rsPro = msDados_db.getProdutos();
+            while (rsPro.next()) {
                 opc = new Opcoes(
-                rsPro.getString("idProduto"),
-                rsPro.getString("descricao"));
+                        rsPro.getString("idProduto"),
+                        rsPro.getString("descricao"));
                 cmbProduto.addItem(opc);
             }
-            
+
             txtData.setText(Utilidades.formatDate(new Date()));
             txtTotalQuantidade.setText("0");
             txtTotalValor.setText("0.00");
             preencherTabela();
+
         } catch (SQLException ex) {
-            Logger.getLogger(frmFatura.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(frmFatura.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formInternalFrameOpened
 

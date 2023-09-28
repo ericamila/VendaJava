@@ -4,6 +4,10 @@ import classes.Dados;
 import classes.Dados_db;
 import classes.Utilidades;
 import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -11,17 +15,12 @@ import javax.swing.table.DefaultTableModel;
  */
 public class frmPesqCliente extends javax.swing.JDialog {
 
-    private Dados msDados;
     private DefaultTableModel mTabela;
     private String resposta = "";
     private Dados_db msDados_db;
 
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
-    }
-
-    public void setDados(Dados msDados) {
-        this.msDados = msDados;
     }
 
     public String getResposta() {
@@ -32,51 +31,37 @@ public class frmPesqCliente extends javax.swing.JDialog {
         String titulos[] = {"ID Cliente", "Tipo ID", "Nome", "Sobrenome"};
         String registro[] = new String[3];
         mTabela = new DefaultTableModel(null, titulos);
+        String sql = "";
         if (txtPesqCliente.getText().equals("")) {
-            for (int i = 0; i < msDados.numeroCliente(); i++) {
-                registro[0] = msDados.getClientes()[i].getIdCliente();
-                registro[1] = msDados.getClientes()[i].getNome();
-                registro[2] = msDados.getClientes()[i].getSnome();
+            sql = "SELECT idCliente, nomes, snome FROM clientes";
+        } else {
+            if (jRBNome.isSelected()) {
+                sql = "SELECT idCliente, nomes, snome FROM clientes "
+                        + "WHERE nomes LIKE '" + txtPesqCliente.getText() + "%'";
+            }
+            if (jRBSobrenome.isSelected()) {
+                sql = "SELECT idCliente, nomes, snome FROM clientes "
+                        + "WHERE snome LIKE '" + txtPesqCliente.getText() + "%'";
+            }
+            if (jRBIDCliente.isSelected()) {
+                sql = "SELECT idCliente, nomes, snome FROM clientes "
+                        + "WHERE idCliente LIKE '" + txtPesqCliente.getText() + "%'";
+            }
+        }
+
+        ResultSet rs = msDados_db.getConsulta(sql);
+
+        try {
+            while (rs.next()) {
+                registro[0] = rs.getString("idCliente");
+                registro[1] = rs.getString("nomes");
+                registro[2] = rs.getString("snome");
                 mTabela.addRow(registro);
             }
             jTabela.setModel(mTabela);
             return;
-        }
-        if (jRBNome.isSelected()) {
-            for (int i = 0; i < msDados.numeroCliente(); i++) {
-                if (msDados.getClientes()[i].getNome().startsWith(txtPesqCliente.getText())) {
-                    registro[0] = msDados.getClientes()[i].getIdCliente();
-                    registro[1] = msDados.getClientes()[i].getNome();
-                    registro[2] = msDados.getClientes()[i].getSnome();
-                    mTabela.addRow(registro);
-                }
-            }
-            jTabela.setModel(mTabela);
-            return;
-        }
-        if (jRBSobrenome.isSelected()) {
-            for (int i = 0; i < msDados.numeroCliente(); i++) {
-                if (msDados.getClientes()[i].getSnome().startsWith(txtPesqCliente.getText())) {
-                    registro[0] = msDados.getClientes()[i].getIdCliente();
-                    registro[1] = msDados.getClientes()[i].getNome();
-                    registro[2] = msDados.getClientes()[i].getSnome();
-                    mTabela.addRow(registro);
-                }
-            }
-            jTabela.setModel(mTabela);
-            return;
-        }
-        if (jRBIDCliente.isSelected()) {
-            for (int i = 0; i < msDados.numeroCliente(); i++) {
-                if (msDados.getClientes()[i].getIdCliente().startsWith(txtPesqCliente.getText())) {
-                    registro[0] = msDados.getClientes()[i].getIdCliente();
-                    registro[1] = msDados.getClientes()[i].getNome();
-                    registro[2] = msDados.getClientes()[i].getSnome();
-                    mTabela.addRow(registro);
-                }
-            }
-            jTabela.setModel(mTabela);
-            return;
+        } catch (SQLException ex) {
+            Logger.getLogger(frmPesqCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -290,16 +275,24 @@ public class frmPesqCliente extends javax.swing.JDialog {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(frmPesqCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmPesqCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(frmPesqCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmPesqCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(frmPesqCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmPesqCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(frmPesqCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(frmPesqCliente.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

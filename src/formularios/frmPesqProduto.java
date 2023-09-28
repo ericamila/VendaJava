@@ -3,6 +3,10 @@ package formularios;
 import classes.Dados;
 import classes.Dados_db;
 import classes.Utilidades;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,6 +24,7 @@ public class frmPesqProduto extends javax.swing.JDialog {
     public void setDados_db(Dados_db msDados_db) {
         this.msDados_db = msDados_db;
     }
+
     public void setDados(Dados msDados) {
         this.msDados = msDados;
     }
@@ -32,37 +37,34 @@ public class frmPesqProduto extends javax.swing.JDialog {
         String titulos[] = {"ID Produto", "Descrição"};
         String registro[] = new String[2];
         mTabela = new DefaultTableModel(null, titulos);
+        String sql = "";
         if (txtPesqProduto.getText().equals("")) {
-            for (int i = 0; i < msDados.numeroProduto(); i++) {
-                registro[0] = msDados.getProdutos()[i].getIdProduto();
-                registro[1] = msDados.getProdutos()[i].getDescricao();
+            sql = "SELECT idProduto, descricao FROM produtos";
+        } else {
+            if (jRBDescricao.isSelected()) {
+                sql = "SELECT idProduto, descricao FROM produtos "
+                        + "WHERE descricao LIKE '" + txtPesqProduto.getText() + "%'";
+            }
+            if (jRBIDProduto.isSelected()) {
+                sql = "SELECT idProduto, descricao FROM produtos "
+                        + "WHERE idProduto LIKE '" + txtPesqProduto.getText() + "%'";
+            }
+        }
+
+        ResultSet rs = msDados_db.getConsulta(sql);
+
+        try {
+            while (rs.next()) {
+                registro[0] = rs.getString("idProduto");
+                registro[1] = rs.getString("descricao");
                 mTabela.addRow(registro);
             }
             jTabela.setModel(mTabela);
             return;
+        } catch (SQLException ex) {
+            Logger.getLogger(frmPesqProduto.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (jRBDescricao.isSelected()) {
-            for (int i = 0; i < msDados.numeroProduto(); i++) {
-                if (msDados.getProdutos()[i].getDescricao().startsWith(txtPesqProduto.getText())) {
-                    registro[0] = msDados.getProdutos()[i].getIdProduto();
-                    registro[1] = msDados.getProdutos()[i].getDescricao();
-                    mTabela.addRow(registro);
-                }
-            }
-            jTabela.setModel(mTabela);
-            return;
-        }
-        if (jRBIDProduto.isSelected()) {
-            for (int i = 0; i < msDados.numeroProduto(); i++) {
-                if (msDados.getProdutos()[i].getIdProduto().startsWith(txtPesqProduto.getText())) {
-                    registro[0] = msDados.getProdutos()[i].getIdProduto();
-                    registro[1] = msDados.getProdutos()[i].getDescricao();
-                    mTabela.addRow(registro);
-                }
-            }
-            jTabela.setModel(mTabela);
-            return;
-        }
+ 
     }
 
     public frmPesqProduto(java.awt.Frame parent, boolean modal) {

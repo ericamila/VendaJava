@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -287,6 +288,16 @@ public class Dados_db {
         }
     }
 
+    public ResultSet getConsulta(String sql) {
+        try {
+            Statement st = cnn.createStatement();
+            return st.executeQuery(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
     public ResultSet getProdutos() {
         try {
             String sql = "SELECT * FROM produtos";
@@ -353,14 +364,14 @@ public class Dados_db {
     public Produto getProduto(String idProduto) {
         try {
             Produto mProduto = null;
-            String sql = "SELECT * FROM produtos " + " WHERE idProduto '" + idProduto + "'";
+            String sql = "SELECT * FROM produtos " + " WHERE idproduto = '" + idProduto + "'";
             Statement st = cnn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             if (rs.next()) {
-                mProduto = new Produto(rs.getString("idProduto"),
+                mProduto = new Produto(rs.getString("idproduto"),
                         rs.getString("descricao"),
                         rs.getInt("preco"),
-                        rs.getInt("idProduto"),
+                        rs.getInt("idimposto"),
                         rs.getString("notas"));
             }
             return mProduto;
@@ -370,4 +381,61 @@ public class Dados_db {
         }
     }
 
+    public int getNumeroFatura() {
+        try {
+            String sql = "SELECT MAX(idFatura) AS num FROM fatura ";
+            Statement st = cnn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if (rs.next()) {
+                return rs.getInt("num") + 1;
+            } else {
+                return 1;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+            return 1;
+        }
+    }
+
+    public void adicionarFatura(int idFatura, String idCliente, Date data) {
+        try {
+            String sql = "INSERT INTO fatura VALUES("
+                    + idFatura + ", '"
+                    + idCliente + "', '"
+                    + Utilidades.formatDate(data) + "')";
+            Statement st = cnn.createStatement();
+            st.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void adicionarDetalheFatura(int idFatura, int idLinha, String idProduto, String descricao, int preco, int quantidade) {
+        try {
+            String sql = "INSERT INTO detalhefatura VALUES("
+                    + idFatura + ", "
+                    + idLinha + ", '"
+                    + idProduto + "', '"
+                    + descricao + "', "
+                    + preco + ", "
+                    + quantidade + ")";
+            Statement st = cnn.createStatement();
+            st.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void trocarSenha(String usuario, String senha) {
+        try {
+            String sql = "UPDATE usuarios SET "
+                    + "senha = '" + senha + "'"
+                    + " WHERE idUsuario = '" + usuario + "'";
+
+            Statement st = cnn.createStatement();
+            st.executeUpdate(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
