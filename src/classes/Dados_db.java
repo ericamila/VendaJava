@@ -288,6 +288,18 @@ public class Dados_db {
         }
     }
 
+    public ResultSet getFatura() {
+        try {
+            String sql = "SELECT * FROM fatura";
+
+            Statement st = cnn.createStatement();
+            return st.executeQuery(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dados_db.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
     public ResultSet getConsulta(String sql) {
         try {
             Statement st = cnn.createStatement();

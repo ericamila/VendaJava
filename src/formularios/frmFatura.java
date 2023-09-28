@@ -4,8 +4,6 @@ import classes.Dados_db;
 import classes.Opcoes;
 import classes.Produto;
 import classes.Utilidades;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
