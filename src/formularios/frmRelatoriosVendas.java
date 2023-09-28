@@ -3,6 +3,7 @@ package formularios;
 import classes.Dados_db;
 import classes.Opcoes;
 import classes.Relatorio;
+import classes.Utilidades;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -48,7 +49,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
         jCBVendaInicial = new javax.swing.JComboBox<>();
         jCBVendaFinal = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        jCBClienteInicial = new javax.swing.JComboBox<>();
+        jCBCliente = new javax.swing.JComboBox<>();
         jBGerarRelatorio = new javax.swing.JButton();
 
         setClosable(true);
@@ -160,7 +161,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel6.setText("Cliente:");
 
-        jCBClienteInicial.setEnabled(false);
+        jCBCliente.setEnabled(false);
 
         jBGerarRelatorio.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jBGerarRelatorio.setText("Gerar Relatório");
@@ -226,7 +227,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
                         .addGap(33, 33, 33)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCBClienteInicial, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jCBCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(70, 70, 70))
         );
         layout.setVerticalGroup(
@@ -264,7 +265,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jCBClienteInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCBCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addComponent(jBGerarRelatorio)
                 .addContainerGap(59, Short.MAX_VALUE))
@@ -310,6 +311,49 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
                     + "INNER JOIN clientes ON fatura.idCliente = clientes.idCliente "
                     + "INNER JOIN detalheFatura ON fatura.idFatura = detalheFatura.idFatura";
 
+            String filtro = "";
+            if (jRTodos.isSelected()) {
+                filtro = "";
+            } else {
+                if (jRCliente.isSelected()) {
+                    if (jCBCliente.getSelectedIndex() == 0) {
+                        JOptionPane.showMessageDialog(null, "Selecione um cliente!");
+                        jCBCliente.requestFocusInWindow();
+                        return;
+                    }
+                    filtro = " WHERE fatura.idCliente = '" + ((Opcoes) jCBCliente.getSelectedItem()).getValor() + "'";
+                }
+                if (jRNumVenda.isSelected()) {
+                    if (jCBVendaInicial.getSelectedIndex() == 0) {
+                        JOptionPane.showMessageDialog(null, "Selecione uma venda inicial!");
+                        jCBVendaInicial.requestFocusInWindow();
+                        return;
+                    }
+                    if (jCBVendaFinal.getSelectedIndex() == 0) {
+                        JOptionPane.showMessageDialog(null, "Selecione uma venda final!");
+                        jCBVendaFinal.requestFocusInWindow();
+                        return;
+                    }
+                    filtro = " WHERE fatura.idFatura >= " + ((Opcoes) jCBVendaInicial.getSelectedItem()).getValor()
+                            + " AND fatura.idFatura <= " + ((Opcoes) jCBVendaFinal.getSelectedItem()).getValor();
+                }
+                
+                if (jRData.isSelected()) {
+                    if (jDCDataInicial.getDate() == null) {
+                        JOptionPane.showMessageDialog(null, "Selecione uma data inicial!");
+                        jDCDataInicial.requestFocusInWindow();
+                        return;
+                    }
+                    if (jDCDataFinal.getDate() == null) {
+                        JOptionPane.showMessageDialog(null, "Selecione uma data final!");
+                        jDCDataFinal.requestFocusInWindow();
+                        return;
+                    }
+                    filtro = " WHERE data >= '" + Utilidades.formatDate(jDCDataInicial.getDate())
+                            + "' AND data <= '" + Utilidades.formatDate(jDCDataFinal.getDate())+"'";
+                }
+            }
+            sql += filtro;
             Relatorio.relatorioFatura(arquivo, msDados_db.getConsulta(sql));
 
             JOptionPane.showMessageDialog(null, "Relatório gerado com sucesso!");
@@ -323,14 +367,14 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         try {
             Opcoes opc = new Opcoes("selecione", "Selecione um cliente");
-            jCBClienteInicial.addItem(opc);
+            jCBCliente.addItem(opc);
             ResultSet rsCli = msDados_db.getClientes();
             while (rsCli.next()) {
                 opc = new Opcoes(
                         rsCli.getString("idCliente"),
                         rsCli.getString("nomes") + " "
                         + rsCli.getString("snome"));
-                jCBClienteInicial.addItem(opc);
+                jCBCliente.addItem(opc);
             }
 
             opc = new Opcoes("selecione", "Selecione uma venda:");
@@ -366,7 +410,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
             jRCliente.setEnabled(false);
             jDCDataInicial.setEnabled(false);
             jDCDataFinal.setEnabled(false);
-            jCBClienteInicial.setEnabled(false);
+            jCBCliente.setEnabled(false);
             jCBVendaInicial.setEnabled(false);
             jCBVendaFinal.setEnabled(false);
         } else {
@@ -378,14 +422,14 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
                 jDCDataInicial.setEnabled(true);
                 jDCDataFinal.setEnabled(true);
 
-                jCBClienteInicial.setEnabled(false);
+                jCBCliente.setEnabled(false);
                 jCBVendaInicial.setEnabled(false);
                 jCBVendaFinal.setEnabled(false);
             }
             if (jRNumVenda.isSelected()) {
                 jDCDataInicial.setEnabled(false);
                 jDCDataFinal.setEnabled(false);
-                jCBClienteInicial.setEnabled(false);
+                jCBCliente.setEnabled(false);
 
                 jCBVendaInicial.setEnabled(true);
                 jCBVendaFinal.setEnabled(true);
@@ -394,7 +438,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
                 jDCDataInicial.setEnabled(false);
                 jDCDataFinal.setEnabled(false);
 
-                jCBClienteInicial.setEnabled(true);
+                jCBCliente.setEnabled(true);
 
                 jCBVendaInicial.setEnabled(false);
                 jCBVendaFinal.setEnabled(false);
@@ -408,7 +452,7 @@ public class frmRelatoriosVendas extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup bGRTipo;
     private javax.swing.JButton btnSelecao;
     private javax.swing.JButton jBGerarRelatorio;
-    private javax.swing.JComboBox<Opcoes> jCBClienteInicial;
+    private javax.swing.JComboBox<Opcoes> jCBCliente;
     private javax.swing.JComboBox<Opcoes> jCBVendaFinal;
     private javax.swing.JComboBox<Opcoes> jCBVendaInicial;
     private com.toedter.calendar.JDateChooser jDCDataFinal;

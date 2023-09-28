@@ -106,7 +106,7 @@
                       <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jCBClienteInicial" max="32767" attributes="0"/>
+                      <Component id="jCBCliente" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="70" max="-2" attributes="0"/>
@@ -156,7 +156,7 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jCBClienteInicial" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCBCliente" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
               <Component id="jBGerarRelatorio" min="-2" max="-2" attributes="0"/>
@@ -343,7 +343,7 @@
         <Property name="text" type="java.lang.String" value="Cliente:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JComboBox" name="jCBClienteInicial">
+    <Component class="javax.swing.JComboBox" name="jCBCliente">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>
